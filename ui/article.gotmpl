@@ -1,0 +1,113 @@
+{{ define "article" }}
+    {{ template "header" . }}
+
+    <header>
+        <h2>
+            {{ .Article.Title }}
+        </h2>
+        {{ if gt (len .Article.Body) 1000 }}
+            {{ template "articleActions" .Article }}
+        {{ end }}
+        <hr/>
+        {{ template "articleBar" .Article }}
+        <hr/>
+    </header>
+    <article>
+        <p>
+            {{ .Article.Body | safeHTML }}
+        </p>
+    </article>
+    <footer>
+        {{ if gt (len .Article.Body) 1000 }}
+            <hr/>
+            {{ template "articleBar" .Article }}
+        {{ end }}
+        <hr/>
+        {{ template "articleActions" .Article }}
+        {{ if gt (len .Article.Body) 1000 }}
+            {{ template "menu" . }}
+        {{ end }}
+    </footer>
+
+    {{ template "footer" . }}
+{{ end }}
+
+{{ define "article_edit" }}
+    {{ template "header" . }}
+
+    <header>
+        <h2>
+            {{ .Article.Title }}
+        </h2>
+    </header>
+    <article>
+        <form action="{{ printf "/articles/%d/edit" .Article.ID }}" method="post">
+            <label for="title">Title</label>
+            <input type="text" id="title" name="title" value="{{ .Article.Title }}" required>
+
+            <label for="published_at">Published At</label>
+            <input type="datetime-local" id="published_at" name="published_at"
+                   value="{{ .Article.PublishedAt.Format "2006-01-02T15:04:05" }}" required>
+
+            <label for="feed">Feed</label>
+            <input type="text" id="feed" name="feed" value="{{ .Article.Feed }}">
+
+            <label for="details">Details</label>
+            <input type="text" id="details" name="details" value="{{ .Article.Details }}">
+
+            <label for="body">Body</label>
+            <textarea id="body" name="body" required rows="10">{{ .Article.Body }}</textarea>
+
+            <button type="submit">Save</button>
+        </form>
+    </article>
+
+    {{ template "footer" . }}
+{{ end }}
+
+
+{{ define "articleActions" }}
+    <div class="row">
+        {{ if .Feed }}
+            <form action="{{ printf "/articles/%d/refetch" .ID }}" method="post">
+                <button class="outline" type="submit">
+                    Load Again
+                </button>
+            </form>
+        {{ end }}
+        <form action="{{ printf "/articles/%d/bookmark" .ID }}" method="post">
+            <button class="outline" type="submit">
+                {{ if .Bookmarked }}
+                    Remove Bookmark
+                {{ else }}
+                    Bookmark
+                {{ end }}
+            </button>
+        </form>
+        {{ if not .Read }}
+            <form action="{{ printf "/articles/%d/read" .ID }}" method="post">
+                <button class="outline" type="submit">Mark as Read</button>
+            </form>
+        {{ end }}
+        <form action="{{ printf "/articles/%d/edit" .ID }}" method="get">
+            <button class="outline" type="submit">Edit</button>
+        </form>
+    </div>
+{{ end }}
+
+{{ define "articleBar" }}
+    <small class="article-info">
+        {{ template "articleInfo" . }} |
+        <a href="{{ .Link }}">
+            {{ .Link }}
+        </a>
+    </small>
+{{ end }}
+
+{{ define "articleInfo" }}
+    {{ if .Bookmarked }}<span>{{ icon "bookmark" 16 }}</span> |{{ end }}
+    {{ if .Read }}<span>{{ icon "check" 16 }}</span> |{{ end }}
+    {{ if .Feed }}<span>{{ .Feed }}</span> |{{ end }}
+    {{ if .Details }}<span>{{ .Details | safeHTML }}</span> |{{ end }}
+    <span>{{ .PublishedAt.Format "2006-01-02 15:04" }}</span>
+{{ end }}
