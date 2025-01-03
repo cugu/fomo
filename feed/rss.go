@@ -67,7 +67,7 @@ func (s *RSS) Fetch(ctx context.Context, seen SeenFunc) ([]*sqlc.Article, error)
 }
 
 func (s *RSS) fetchRSS(ctx context.Context, seen SeenFunc, body io.Reader) ([]*sqlc.Article, error) {
-	slog.InfoContext(ctx, "fetching RSS feed", "name", s.name)
+	slog.InfoContext(ctx, "Fetching RSS feed", "name", s.name)
 
 	fp := &rss.Parser{}
 
@@ -117,7 +117,7 @@ func (s *RSS) fetchRSS(ctx context.Context, seen SeenFunc, body io.Reader) ([]*s
 }
 
 func (s *RSS) fetchFeed(ctx context.Context, body io.Reader) ([]*sqlc.Article, error) {
-	slog.InfoContext(ctx, "fetching feed", "name", s.name)
+	slog.InfoContext(ctx, "Fetching feed", "name", s.name)
 
 	feed, err := gofeed.NewParser().Parse(body)
 	if err != nil {

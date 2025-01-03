@@ -3,6 +3,7 @@ package app
 import (
 	"encoding/json"
 	"fmt"
+	"log/slog"
 	"os"
 
 	"github.com/cugu/fomo/feed"
@@ -10,14 +11,15 @@ import (
 
 type Config struct {
 	BaseURL     string
-	Password    string
 	Port        int
 	Feeds       map[string]feed.Feed
 	UpdateTimes []int
 }
 
-func parseConfig() (*Config, error) {
-	f, err := os.Open("fomo.json")
+func parseConfig(configPath string) (*Config, error) {
+	slog.Info("Loading config", "path", configPath)
+
+	f, err := os.Open(configPath)
 	if err != nil {
 		return nil, err
 	}
@@ -66,7 +68,6 @@ func (j *JSONConfig) toConfig() (*Config, error) {
 
 	return &Config{
 		BaseURL:     j.BaseURL,
-		Password:    j.Password,
 		Port:        j.Port,
 		Feeds:       feeds,
 		UpdateTimes: j.UpdateTimes,

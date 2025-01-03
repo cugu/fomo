@@ -4,7 +4,7 @@ go = gotip
 .PHONY: generate
 generate:
 	@echo "Generating..."
-	cd db && go tool sqlc generate && cd ..
+	cd db && $(go) tool sqlc generate && cd ..
 
 .PHONY: fmt
 fmt:
@@ -30,5 +30,5 @@ test:
 .PHONY: run
 run:
 	@echo "Running..."
-	$(go) run .
+	$(go) run . -password=foobar
 	@echo "Done."

@@ -31,6 +31,8 @@ func scheduleUpdates(config *Config, queries *sqlc.Queries) (func() error, error
 		return scheduler.Shutdown, nil
 	}
 
+	slog.Info("Scheduling updates", "times", config.UpdateTimes)
+
 	if _, err := scheduler.NewJob(
 		gocron.DailyJob(1, gocron.NewAtTimes(atTimes[0], atTimes[1:]...)),
 		gocron.NewTask(func() {

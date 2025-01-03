@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"embed"
 	"fmt"
+	"log/slog"
 	"net/url"
 	"path/filepath"
 
@@ -13,28 +14,36 @@ import (
 	"github.com/cugu/fomo/db/sqlc"
 )
 
-const sqlitePath = "./fomo.db"
+const sqlitePath = "fomo.db"
 
 //go:embed migrations/*.sql
 var schema embed.FS
 
-func DB() (*sql.DB, *sqlc.Queries, error) {
-	name, err := filepath.Abs(sqlitePath)
-	if err != nil {
-		return nil, nil, err
-	}
+func DB(dataDirPath string) (*sql.DB, *sqlc.Queries, error) {
+	dbPath := filepath.Join(dataDirPath, sqlitePath)
 
-	sqlite, err := sql.Open("sqlite", name+"?_time_format=sqlite")
+	slog.Info("Connecting to database", "path", dbPath)
+
+	sqlite, err := sql.Open("sqlite", dbPath+"?_time_format=sqlite")
 	if err != nil {
 		return nil, nil, err
 	}
 
 	// create table if not exists
-	u, _ := url.Parse(fmt.Sprintf("sqlite://%s", name))
+	u, _ := url.Parse(fmt.Sprintf("sqlite://%s", dbPath))
 	db := dbmate.New(u)
 	db.FS = schema
 	db.MigrationsTableName = "migrations"
 	db.MigrationsDir = []string{"migrations"}
+	db.Log = &infoSlog{}
 
 	return sqlite, sqlc.New(sqlite), db.CreateAndMigrate()
+}
+
+type infoSlog struct{}
+
+func (i *infoSlog) Write(p []byte) (n int, err error) {
+	slog.Info(string(p))
+
+	return len(p), nil
 }

@@ -1,6 +1,5 @@
 {
   "base_url": "http://localhost:8080",
-  "password": "foobar",
   "port": 8080,
   "update_times": [
     7,
