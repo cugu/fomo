@@ -15,11 +15,19 @@ A personal newsreader.
 
 ## Usage
 
-Use the docker image from [ghcr.io/cugu/fomo:latest](https://github.com/cugu/fomo/pkgs/container/fomo), 
-mount a custom configuration file to `/usr/local/bin/fomo.json` and expose the service on port 8080, e.g.:
+Use the docker image from [ghcr.io/cugu/fomo:latest](https://github.com/cugu/fomo/pkgs/container/fomo),
+mount a custom configuration file to `/app/fomo/config.json`,
+mount a volume to `/app/fomo/data` to store the database,
+set the `FOMO_PASSWORD` environment variable to set the password for the service,
+and expose the service on port 8080, e.g.:
 
 ```sh
-docker run -d -p 8080:8080 -v /path/to/fomo.json:/usr/local/bin/fomo.json ghcr.io/cugu/fomo:latest
+docker run -d \
+  -p 8080:8080 \
+  -v ./config.json:/app/fomo/config.json \
+  -v ./fomodata:/app/fomo/data \
+  -e FOMO_PASSWORD=yourpassword \
+  ghcr.io/cugu/fomo:latest
 ```
 
 ### Configuration
@@ -33,12 +41,13 @@ The configuration file is a JSON file with the structure shown below.
 {
   // URL where the service is hosted
   "base_url": "http://localhost:8080",
-  // Password to access the service
-  "password": "foobar",
   // Port to listen on
   "port": 8080,
   // Times to update feeds
-  "update_times": [ 7, 16 ],
+  "update_times": [
+    7,
+    16
+  ],
   // List of feeds to subscribe to
   "feeds": {
     // simple RSS feed

@@ -20,9 +20,8 @@ CREATE TABLE articles
     -- custom metadata fields
     details      TEXT          NOT NULL,
     feed         VARCHAR(255)  NOT NULL,
-    read         BOOLEAN       NOT NULL DEFAULT FALSE,
-    bookmarked   BOOLEAN       NOT NULL DEFAULT FALSE,
-    created_at   TIMESTAMP     NOT NULL DEFAULT CURRENT_TIMESTAMP
+    read         BOOLEAN       NOT NULL,
+    bookmarked   BOOLEAN       NOT NULL
 );
 -- Dbmate schema migrations
 INSERT INTO "migrations" (version) VALUES
