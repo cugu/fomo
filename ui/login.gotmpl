@@ -1,0 +1,15 @@
+{{ define "login" }}
+    {{ template "title" . }}
+
+    <form action="/login" method="post">
+        <input type="password" name="password" placeholder="Password"/>
+        {{ if .Error }}
+            <small>
+                {{ .Error }}
+            </small>
+        {{ end }}
+        <input type="submit" value="Login"/>
+    </form>
+
+    {{ template "footer" . }}
+{{ end }}

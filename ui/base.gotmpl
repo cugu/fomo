@@ -1,0 +1,62 @@
+{{ define "header" }}
+    {{ template "title" . }}
+    {{ template "menu" . }}
+{{ end }}
+
+{{ define "title" }}
+    <html lang="en">
+    <head>
+        <title>{{ .Title }}</title>
+        <meta charset="UTF-8"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+        <meta name="theme-color" content="#e7e5e4" media="(prefers-color-scheme: light)"/>
+        <meta name="theme-color" content="#333" media="(prefers-color-scheme: dark)"/>
+        <link rel="apple-touch-icon" sizes="180x180" href="{{ .BaseURL }}/static/apple-touch-icon.png"/>
+        <link rel="icon" type="image/png" sizes="32x32" href="{{ .BaseURL }}/static/favicon-32x32.png"/>
+        <link rel="icon" type="image/png" sizes="16x16" href="{{ .BaseURL }}/static/favicon-16x16.png"/>
+        <link rel="manifest" href="{{ .BaseURL }}/static/site.webmanifest"/>
+        <link rel="stylesheet" href="{{ .BaseURL }}/static/normalize.css"/>
+        <link rel="stylesheet" href="{{ .BaseURL }}/static/style.css"/>
+    </head>
+    <body>
+    <main class="container">
+    <a href="/">
+        <h1>
+            fomo
+        </h1>
+    </a>
+    <small class="subtitle">
+        Feeds are updated at {{ .UpdateTimes }}.
+    </small>
+{{ end }}
+
+{{ define "menu" }}
+    <div class="row">
+        <a href="/articles">All</a>
+        <a href="/articles?filter=unread">Unread</a>
+        <a href="/articles?filter=bookmarked">Bookmarked</a>
+        <a href="/articles?filter=read">Read</a>
+        <a href="/logout">Logout</a>
+    </div>
+{{ end }}
+
+{{ define "footer" }}
+    </main>
+    </body>
+    </html>
+{{ end }}
+
+{{ define "error" }}
+    {{ template "header" . }}
+
+    <header>
+        <h2>
+            Error
+        </h2>
+    </header>
+    <article>
+        {{ .Error }}
+    </article>
+
+    {{ template "footer" . }}
+{{ end }}

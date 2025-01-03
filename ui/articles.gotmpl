@@ -1,0 +1,67 @@
+{{ define "articles" }}
+    {{ template "header" . }}
+
+    <h2>{{ .Title }}</h2>
+    {{ if and (eq .Filter "unread") (len .Articles) }}
+        <form action="/articles/read" method="post">
+            <button class="outline" type="submit">Mark all as read</button>
+        </form>
+    {{ end }}
+    <hr/>
+    {{ template "pagination" . }}
+    <div class="articles">
+        {{ range .Articles }}
+            <article>
+                <div>
+                    <strong>
+                        <a href="{{ printf "/articles/%d" .ID }}">
+                            {{ .Title }}
+                        </a>
+                    </strong>
+                </div>
+                <small class="article-info">
+                    {{ template "articleInfo" . }}
+                </small>
+            </article>
+        {{ else }}
+            <div>
+                <small>No articles found</small>
+            </div>
+        {{ end }}
+    </div>
+    <hr/>
+    {{ template "pagination" . }}
+    <form action="/articles" method="post" style="flex-direction: row">
+        <input type="text" name="url" placeholder="URL" required style="flex-grow: 1"/>
+        <button type="submit">Ingest</button>
+    </form>
+
+    {{ template "footer" . }}
+{{ end }}
+
+{{ define "pagination" }}
+    {{ if or (gt .Page 1) .HasNext }}
+        <div class="pagination">
+            {{ if gt .Page 1 }}
+                <a href="{{ printf "/articles?filter=%s&page=%d" .Filter .Previous }}">
+                    &larr;
+                </a>
+            {{ else }}
+                <span class="disabled">&larr;</span>
+            {{ end }}
+
+            <small>
+                {{ .Page }}
+            </small>
+
+            {{ if .HasNext }}
+                <a href="{{ printf "/articles?filter=%s&page=%d" .Filter .Next }}">
+                    &rarr;
+                </a>
+            {{ else }}
+                <span class="disabled">&rarr;</span>
+            {{ end }}
+        </div>
+        <hr/>
+    {{ end }}
+{{ end }}

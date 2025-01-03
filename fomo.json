@@ -1,0 +1,23 @@
+{
+  "base_url": "http://localhost:8080",
+  "password": "foobar",
+  "port": 8080,
+  "update_times": [
+    7,
+    16
+  ],
+  "feeds": {
+    "xkcd.com": {
+      "type": "rss",
+      "url": "https://xkcd.com/rss.xml"
+    },
+    "lobste.rs": {
+      "type": "lobsters"
+    },
+    "news.ycombinator.com": {
+      "type": "rss",
+      "url": "https://hnrss.org/frontpage?points=200",
+      "fetch_link_content": true
+    }
+  }
+}
