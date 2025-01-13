@@ -74,7 +74,12 @@ The configuration file is a JSON file with the structure shown below.
 ### List of articles
 
 ![Screenshot of the article list](./doc/list.png)
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fcugu%2Ffomo.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2Fcugu%2Ffomo?ref=badge_shield)
 
 ### Article view
 
 ![Screenshot of the article view](./doc/view.png)
+
+
+## License
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fcugu%2Ffomo.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2Fcugu%2Ffomo?ref=badge_large)
