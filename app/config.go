@@ -12,7 +12,7 @@ import (
 type Config struct {
 	BaseURL     string
 	Port        int
-	Feeds       map[string]feed.Feed
+	Feeds       []feed.Feed
 	UpdateTimes []int
 }
 
@@ -45,7 +45,7 @@ type TypedConfig struct {
 }
 
 func (j *JSONConfig) toConfig() (*Config, error) {
-	feeds := map[string]feed.Feed{}
+	var feeds []feed.Feed
 
 	for name, raw := range j.Feeds {
 		var typed TypedConfig
@@ -63,7 +63,7 @@ func (j *JSONConfig) toConfig() (*Config, error) {
 			return nil, fmt.Errorf("error creating feed %s: %w", name, err)
 		}
 
-		feeds[name] = feed
+		feeds = append(feeds, feed)
 	}
 
 	return &Config{

@@ -36,9 +36,9 @@ func scheduleUpdates(config *Config, queries *sqlc.Queries) (func() error, error
 	if _, err := scheduler.NewJob(
 		gocron.DailyJob(1, gocron.NewAtTimes(atTimes[0], atTimes[1:]...)),
 		gocron.NewTask(func() {
-			for name, f := range config.Feeds {
+			for _, f := range config.Feeds {
 				if err := feed.Fetch(context.Background(), queries, f); err != nil {
-					slog.Error("error fetching feed", "name", name, "error", err.Error())
+					slog.Error("error fetching feed", "name", f.Name(), "error", err.Error())
 				}
 			}
 		}),

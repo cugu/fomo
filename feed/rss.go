@@ -19,7 +19,14 @@ import (
 )
 
 func init() {
-	RegisterGenerator("rss", newRSS)
+	RegisterGenerator("rss", func(name string, config json.RawMessage) (Feed, error) {
+		var cfg RSSConfig
+		if err := json.Unmarshal(config, &cfg); err != nil {
+			return nil, fmt.Errorf("failed to unmarshal RSS config: %w", err)
+		}
+
+		return NewRSS(name, &cfg), nil
+	})
 }
 
 type RSS struct {
@@ -34,17 +41,12 @@ type RSSConfig struct {
 	FetchLinkContent bool   `json:"fetch_link_content"`
 }
 
-func newRSS(name string, config json.RawMessage) (Feed, error) {
-	var cfg RSSConfig
-	if err := json.Unmarshal(config, &cfg); err != nil {
-		return nil, fmt.Errorf("failed to unmarshal RSS config: %w", err)
-	}
-
-	return NewRSSWithConfig(name, &cfg), nil
+func NewRSS(name string, config *RSSConfig) *RSS {
+	return &RSS{name: name, config: config}
 }
 
-func NewRSSWithConfig(name string, config *RSSConfig) *RSS {
-	return &RSS{name: name, config: config}
+func (s *RSS) Name() string {
+	return s.name
 }
 
 func (s *RSS) Fetch(ctx context.Context, seen SeenFunc) ([]*sqlc.Article, error) {

@@ -25,6 +25,10 @@ func Run() error {
 		return fmt.Errorf("error parsing config: %w", err)
 	}
 
+	return RunWithConfig(config, password, dataDirPath)
+}
+
+func RunWithConfig(config *Config, password, dataDirPath string) error {
 	database, queries, err := db.DB(dataDirPath)
 	if err != nil {
 		return fmt.Errorf("error initializing database: %w", err)

@@ -20,7 +20,7 @@ type Server struct {
 	password       string
 	updateTimes    []int
 	queries        *sqlc.Queries
-	feeds          map[string]feed.Feed
+	feeds          []feed.Feed
 	sessionManager *scs.SessionManager
 	templates      *template.Template
 }
@@ -29,7 +29,7 @@ func New(
 	baseURL string,
 	password string,
 	updateTimes []int,
-	feeds map[string]feed.Feed,
+	feeds []feed.Feed,
 	queries *sqlc.Queries,
 ) *Server {
 	sessionManager := scs.New()
