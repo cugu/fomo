@@ -13,15 +13,21 @@ import (
 )
 
 func init() {
-	RegisterGenerator("lobsters", newLobsters)
+	RegisterGenerator("lobsters", func(name string, _ json.RawMessage) (Feed, error) {
+		return &Lobsters{name: name}, nil
+	})
 }
 
 type Lobsters struct {
 	name string
 }
 
-func newLobsters(name string, _ json.RawMessage) (Feed, error) {
-	return &Lobsters{name: name}, nil
+func NewLobsters(name string) *Lobsters {
+	return &Lobsters{name: name}
+}
+
+func (s *Lobsters) Name() string {
+	return s.name
 }
 
 type LobsterResponse struct {

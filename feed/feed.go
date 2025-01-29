@@ -36,6 +36,7 @@ func LookupFeed(feedType string) (Generator, bool) {
 type SeenFunc func(context.Context, string) bool
 
 type Feed interface {
+	Name() string
 	Fetch(ctx context.Context, seen SeenFunc) ([]*sqlc.Article, error)
 	ReFetch(ctx context.Context, article *sqlc.Article) (*sqlc.Article, error)
 }

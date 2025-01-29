@@ -11,6 +11,7 @@ import (
 	"github.com/go-chi/chi/v5"
 
 	"github.com/cugu/fomo/db/sqlc"
+	"github.com/cugu/fomo/feed"
 )
 
 const pageSize = 10
@@ -116,8 +117,16 @@ func (s *Server) articleReFetch(writer http.ResponseWriter, request *http.Reques
 		return
 	}
 
-	feed, ok := s.feeds[article.Feed]
-	if !ok {
+	var feed feed.Feed
+
+	for _, f := range s.feeds {
+		if f.Name() == article.Feed {
+			feed = f
+			break
+		}
+	}
+
+	if feed == nil {
 		s.error("Feed not found", writer, request)
 		return
 	}
