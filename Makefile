@@ -10,9 +10,7 @@ fmt:
 	@echo "Formatting..."
 	go mod tidy
 	go fmt ./...
-	go tool gci write -s standard -s default -s "prefix(github.com/cugu/fomo)" .
-	go tool gofumpt -l -w .
-	go tool wsl -fix ./... || true
+	go tool golangci-lint run --fix
 
 .PHONY: lint
 lint:
