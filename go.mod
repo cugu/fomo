@@ -14,11 +14,8 @@ require (
 )
 
 tool (
-	github.com/bombsimon/wsl/v4/cmd/wsl
-	github.com/daixiang0/gci
 	github.com/golangci/golangci-lint/cmd/golangci-lint
 	github.com/sqlc-dev/sqlc/cmd/sqlc
-	mvdan.cc/gofumpt
 )
 
 require (
