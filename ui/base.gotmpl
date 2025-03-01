@@ -1,9 +1,9 @@
 {{ define "header" }}
-    {{ template "title" . }}
+    {{ template "headerpublic" . }}
     {{ template "menu" . }}
 {{ end }}
 
-{{ define "title" }}
+{{ define "headerpublic" }}
     <html lang="en">
     <head>
         <title>{{ .Title }}</title>
@@ -37,6 +37,22 @@
         <a href="/articles?filter=bookmarked">Bookmarked</a>
         <a href="/articles?filter=read">Read</a>
         <a href="/logout">Logout</a>
+    </div>
+    <div class="row">
+        <form action="/articles" method="get" style="flex-direction: row">
+            <input type="hidden" name="filter" value="search"/>
+            <input type="text" name="q" placeholder="Search" required style="flex-grow: 1"/>
+            <button type="submit">Search</button>
+        </form>
+    </div>
+{{ end }}
+
+{{ define "ingest" }}
+    <div class="row">
+        <form action="/articles" method="post" style="flex-direction: row">
+            <input type="text" name="url" placeholder="URL" required style="flex-grow: 1"/>
+            <button type="submit">Ingest</button>
+        </form>
     </div>
 {{ end }}
 

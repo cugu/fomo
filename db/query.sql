@@ -25,6 +25,16 @@ WHERE bookmarked = TRUE
 ORDER BY published_at DESC
 LIMIT @limit OFFSET @offset;
 
+-- name: SearchArticles :many
+SELECT *
+FROM articles
+WHERE title LIKE '%' || @query || '%'
+   OR body LIKE '%' || @query || '%'
+   OR details LIKE '%' || @query || '%'
+   OR link LIKE '%' || @query || '%'
+ORDER BY published_at DESC
+LIMIT @limit OFFSET @offset;
+
 -- name: Article :one
 SELECT *
 FROM articles
@@ -48,7 +58,8 @@ VALUES (@guid, @title, @body, @published_at, @link, @feed, @details, @read, @boo
 RETURNING id;
 
 -- name: SetArticle :one
-INSERT OR REPLACE INTO articles (guid, title, body, published_at, link, feed, details, read, bookmarked)
+INSERT OR
+REPLACE INTO articles (guid, title, body, published_at, link, feed, details, read, bookmarked)
 VALUES (@guid, @title, @body, @published_at, @link, @feed, @details, @read, @bookmarked)
 RETURNING id;
 
@@ -78,7 +89,8 @@ FROM sessions
 WHERE token = @token;
 
 -- name: CommitSession :exec
-INSERT OR REPLACE INTO sessions (token, data, expiry)
+INSERT OR
+REPLACE INTO sessions (token, data, expiry)
 VALUES (@token, @data, @expiry);
 
 -- name: DeleteSession :exec
