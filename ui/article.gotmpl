@@ -24,11 +24,11 @@
         {{ end }}
         <hr/>
         {{ template "articleActions" .Article }}
-        {{ if gt (len .Article.Body) 1000 }}
-            {{ template "menu" . }}
-        {{ end }}
     </footer>
 
+    {{ if gt (len .Article.Body) 1000 }}
+        <a href="#">Go to top</a>
+    {{ end }}
     {{ template "footer" . }}
 {{ end }}
 

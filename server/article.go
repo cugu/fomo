@@ -16,9 +16,10 @@ import (
 
 const pageSize = 10
 
-func (s *Server) articlesPage(writer http.ResponseWriter, request *http.Request) {
+func (s *Server) articlesPage(writer http.ResponseWriter, request *http.Request) { //nolint:funlen
 	filter := request.URL.Query().Get("filter")
 	page, offset := parsePage(request)
+	query := request.URL.Query().Get("q")
 
 	var (
 		title    string
@@ -42,6 +43,13 @@ func (s *Server) articlesPage(writer http.ResponseWriter, request *http.Request)
 	case "read":
 		title = "Read articles"
 		articles, err = s.queries.ListReadArticles(request.Context(), sqlc.ListReadArticlesParams{
+			Offset: offset,
+			Limit:  pageSize + 1,
+		})
+	case "search":
+		title = "Search results"
+		articles, err = s.queries.SearchArticles(request.Context(), sqlc.SearchArticlesParams{
+			Query:  sql.NullString{String: query, Valid: true},
 			Offset: offset,
 			Limit:  pageSize + 1,
 		})

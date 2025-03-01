@@ -7,6 +7,7 @@ package sqlc
 
 import (
 	"context"
+	"database/sql"
 	"time"
 )
 
@@ -59,7 +60,8 @@ func (q *Queries) BookmarkArticle(ctx context.Context, id int64) error {
 }
 
 const commitSession = `-- name: CommitSession :exec
-INSERT OR REPLACE INTO sessions (token, data, expiry)
+INSERT OR
+REPLACE INTO sessions (token, data, expiry)
 VALUES (?1, ?2, ?3)
 `
 
@@ -368,8 +370,60 @@ func (q *Queries) NextUnreadArticle(ctx context.Context) (Article, error) {
 	return i, err
 }
 
+const searchArticles = `-- name: SearchArticles :many
+SELECT id, guid, title, body, published_at, link, details, feed, read, bookmarked
+FROM articles
+WHERE title LIKE '%' || ?1 || '%'
+   OR body LIKE '%' || ?1 || '%'
+   OR details LIKE '%' || ?1 || '%'
+   OR link LIKE '%' || ?1 || '%'
+ORDER BY published_at DESC
+LIMIT ?3 OFFSET ?2
+`
+
+type SearchArticlesParams struct {
+	Query  sql.NullString `json:"query"`
+	Offset int64          `json:"offset"`
+	Limit  int64          `json:"limit"`
+}
+
+func (q *Queries) SearchArticles(ctx context.Context, arg SearchArticlesParams) ([]Article, error) {
+	rows, err := q.db.QueryContext(ctx, searchArticles, arg.Query, arg.Offset, arg.Limit)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Article
+	for rows.Next() {
+		var i Article
+		if err := rows.Scan(
+			&i.ID,
+			&i.Guid,
+			&i.Title,
+			&i.Body,
+			&i.PublishedAt,
+			&i.Link,
+			&i.Details,
+			&i.Feed,
+			&i.Read,
+			&i.Bookmarked,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const setArticle = `-- name: SetArticle :one
-INSERT OR REPLACE INTO articles (guid, title, body, published_at, link, feed, details, read, bookmarked)
+INSERT OR
+REPLACE INTO articles (guid, title, body, published_at, link, feed, details, read, bookmarked)
 VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9)
 RETURNING id
 `

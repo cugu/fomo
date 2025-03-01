@@ -3,9 +3,11 @@
 
     <h2>{{ .Title }}</h2>
     {{ if and (eq .Filter "unread") (len .Articles) }}
-        <form action="/articles/read" method="post">
-            <button class="outline" type="submit">Mark all as read</button>
-        </form>
+        <div class="row">
+            <form action="/articles/read" method="post">
+                <button class="outline" type="submit">Mark all as read</button>
+            </form>
+        </div>
     {{ end }}
     <hr/>
     {{ template "pagination" . }}
@@ -30,12 +32,9 @@
         {{ end }}
     </div>
     <hr/>
-    {{ template "pagination" . }}
-    <form action="/articles" method="post" style="flex-direction: row">
-        <input type="text" name="url" placeholder="URL" required style="flex-grow: 1"/>
-        <button type="submit">Ingest</button>
-    </form>
 
+    {{ template "pagination" . }}
+    {{ template "ingest" . }}
     {{ template "footer" . }}
 {{ end }}
 
