@@ -41,7 +41,7 @@
     <div class="row">
         <form action="/articles" method="get" style="flex-direction: row">
             <input type="hidden" name="filter" value="search"/>
-            <input type="text" name="q" placeholder="Search" required style="flex-grow: 1"/>
+            <input type="text" name="q" placeholder="Search" required style="flex-grow: 1" value="{{ .Query }}" />
             <button type="submit">Search</button>
         </form>
     </div>

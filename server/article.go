@@ -16,7 +16,7 @@ import (
 
 const pageSize = 10
 
-func (s *Server) articlesPage(writer http.ResponseWriter, request *http.Request) { //nolint:funlen
+func (s *Server) articlesPage(writer http.ResponseWriter, request *http.Request) { //nolint:funlen,cyclop
 	filter := request.URL.Query().Get("filter")
 	page, offset := parsePage(request)
 	query := request.URL.Query().Get("q")
@@ -66,9 +66,27 @@ func (s *Server) articlesPage(writer http.ResponseWriter, request *http.Request)
 		return
 	}
 
+	hasPrev := page > 1
 	hasNext := len(articles) > pageSize
+
 	if hasNext {
 		articles = articles[:pageSize]
+	}
+
+	var prevURL, nextURL string
+
+	if hasPrev {
+		prevURL = fmt.Sprintf("/articles?filter=%s&page=%d", filter, page-1)
+		if query != "" {
+			prevURL += "&q=" + query
+		}
+	}
+
+	if hasNext {
+		nextURL = fmt.Sprintf("/articles?filter=%s&page=%d", filter, page+1)
+		if query != "" {
+			nextURL += "&q=" + query
+		}
 	}
 
 	s.template(writer, "articles", map[string]any{
@@ -76,9 +94,9 @@ func (s *Server) articlesPage(writer http.ResponseWriter, request *http.Request)
 		"Filter":   filter,
 		"Articles": articles,
 		"Page":     page,
-		"HasNext":  hasNext,
-		"Previous": page - 1,
-		"Next":     page + 1,
+		"Previous": prevURL,
+		"Next":     nextURL,
+		"Query":    query,
 	})
 }
 

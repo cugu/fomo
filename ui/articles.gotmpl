@@ -39,10 +39,10 @@
 {{ end }}
 
 {{ define "pagination" }}
-    {{ if or (gt .Page 1) .HasNext }}
+    {{ if or .Previous .Next }}
         <div class="pagination">
-            {{ if gt .Page 1 }}
-                <a href="{{ printf "/articles?filter=%s&page=%d" .Filter .Previous }}">
+            {{ if .Previous }}
+                <a href="{{ .Previous }}">
                     &larr;
                 </a>
             {{ else }}
@@ -53,8 +53,8 @@
                 {{ .Page }}
             </small>
 
-            {{ if .HasNext }}
-                <a href="{{ printf "/articles?filter=%s&page=%d" .Filter .Next }}">
+            {{ if .Next }}
+                <a href="{{ .Next }}">
                     &rarr;
                 </a>
             {{ else }}
