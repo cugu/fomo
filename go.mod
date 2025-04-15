@@ -6,7 +6,7 @@ require (
 	github.com/alexedwards/scs/v2 v2.8.0
 	github.com/amacneil/dbmate/v2 v2.24.2
 	github.com/go-chi/chi/v5 v5.2.0
-	github.com/go-co-op/gocron/v2 v2.14.0
+	github.com/go-co-op/gocron/v2 v2.16.1
 	github.com/go-shiori/go-readability v0.0.0-20241012063810-92284fa8a71f
 	github.com/lib/pq v1.10.9
 	github.com/mmcdole/gofeed v1.3.0
@@ -117,7 +117,7 @@ require (
 	github.com/jingyugao/rowserrcheck v1.1.1 // indirect
 	github.com/jinzhu/inflection v1.0.0 // indirect
 	github.com/jjti/go-spancheck v0.6.2 // indirect
-	github.com/jonboulle/clockwork v0.4.0 // indirect
+	github.com/jonboulle/clockwork v0.5.0 // indirect
 	github.com/json-iterator/go v1.1.12 // indirect
 	github.com/julz/importas v0.1.0 // indirect
 	github.com/karamaru-alpha/copyloopvar v1.1.0 // indirect
