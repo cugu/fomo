@@ -3,7 +3,7 @@ module github.com/cugu/fomo
 go 1.24
 
 require (
-	github.com/alexedwards/scs/v2 v2.8.0
+	github.com/alexedwards/scs/v2 v2.9.0
 	github.com/amacneil/dbmate/v2 v2.27.0
 	github.com/go-chi/chi/v5 v5.2.2
 	github.com/go-co-op/gocron/v2 v2.16.2
