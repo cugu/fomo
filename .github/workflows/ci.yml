@@ -14,9 +14,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-go@v5
-        with: { go-version: '1.24' }
-      - run: go install golang.org/dl/gotip@latest
-      - run: gotip download
+        with: { go-version: '1.25' }
 
       - run: make generate
       - run: git diff --exit-code
@@ -26,9 +24,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-go@v5
-        with: { go-version: '1.24' }
-      - run: go install golang.org/dl/gotip@latest
-      - run: gotip download
+        with: { go-version: '1.25' }
 
       - run: make fmt
       - run: git diff --exit-code
@@ -38,9 +34,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-go@v5
-        with: { go-version: '1.24' }
-      - run: go install golang.org/dl/gotip@latest
-      - run: gotip download
+        with: { go-version: '1.25' }
 
       - run: make lint
 
@@ -49,9 +43,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-go@v5
-        with: { go-version: '1.24' }
-      - run: go install golang.org/dl/gotip@latest
-      - run: gotip download
+        with: { go-version: '1.25' }
 
       - run: make test
 
