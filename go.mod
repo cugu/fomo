@@ -1,6 +1,6 @@
 module github.com/cugu/fomo
 
-go 1.24
+go 1.25
 
 require (
 	github.com/alexedwards/scs/v2 v2.9.0
