@@ -10,7 +10,7 @@ require (
 	github.com/go-shiori/go-readability v0.0.0-20241012063810-92284fa8a71f
 	github.com/lib/pq v1.10.9
 	github.com/mmcdole/gofeed v1.3.0
-	modernc.org/sqlite v1.40.1
+	modernc.org/sqlite v1.43.0
 )
 
 tool (
