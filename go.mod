@@ -6,7 +6,7 @@ require (
 	github.com/alexedwards/scs/v2 v2.9.0
 	github.com/amacneil/dbmate/v2 v2.29.0
 	github.com/go-chi/chi/v5 v5.2.3
-	github.com/go-co-op/gocron/v2 v2.18.2
+	github.com/go-co-op/gocron/v2 v2.19.0
 	github.com/go-shiori/go-readability v0.0.0-20241012063810-92284fa8a71f
 	github.com/lib/pq v1.10.9
 	github.com/mmcdole/gofeed v1.3.0
