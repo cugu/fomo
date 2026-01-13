@@ -82,8 +82,8 @@ github.com/alexkohler/prealloc v1.0.0 h1:Hbq0/3fJPQhNkN0dR95AVrr6R7tou91y0uHG5pO
 github.com/alexkohler/prealloc v1.0.0/go.mod h1:VetnK3dIgFBBKmg0YnD9F9x6Icjd+9cvfHR56wJVlKE=
 github.com/alingse/asasalint v0.0.11 h1:SFwnQXJ49Kx/1GghOFz1XGqHYKp21Kq1nHad/0WQRnw=
 github.com/alingse/asasalint v0.0.11/go.mod h1:nCaoMhw7a9kSJObvQyVzNTPBDbNpdocqrSP7t/cW5+I=
-github.com/amacneil/dbmate/v2 v2.29.2 h1:5ma7RMTVSwFuYPdsi5H7kLqTCor3DdJjrwPfsI7m2x4=
-github.com/amacneil/dbmate/v2 v2.29.2/go.mod h1:oCP18G5wDuMZo3HA8vEukxHPk2KFdnfG3DlhxqWGTUA=
+github.com/amacneil/dbmate/v2 v2.29.3 h1:tjQzFPLhnwh34Y0022Np8uLM1RKtr3qBse4l/jAZZ/Y=
+github.com/amacneil/dbmate/v2 v2.29.3/go.mod h1:oCP18G5wDuMZo3HA8vEukxHPk2KFdnfG3DlhxqWGTUA=
 github.com/andybalholm/cascadia v1.3.2 h1:3Xi6Dw5lHF15JtdcmAHD3i1+T8plmv7BQ/nsViSLyss=
 github.com/andybalholm/cascadia v1.3.2/go.mod h1:7gtRlve5FxPPgIgX36uWBX58OdBsSS6lUvCFb+h7KvU=
 github.com/antlr4-go/antlr/v4 v4.13.1 h1:SqQKkuVZ+zWkMMNkjy5FZe5mr5WURWnlpmOuzYWrPrQ=
