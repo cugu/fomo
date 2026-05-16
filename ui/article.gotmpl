@@ -3,7 +3,7 @@
 
     <header>
         <h2>
-            {{ .Article.Title }}
+            {{ titleOrBody .Article.Title .Article.Body }}
         </h2>
         {{ if gt (len .Article.Body) 1000 }}
             {{ template "articleActions" .Article }}
@@ -37,7 +37,7 @@
 
     <header>
         <h2>
-            {{ .Article.Title }}
+            {{ titleOrBody .Article.Title .Article.Body }}
         </h2>
     </header>
     <article>

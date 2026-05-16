@@ -17,7 +17,7 @@
                 <div>
                     <strong>
                         <a href="{{ printf "/articles/%d" .ID }}">
-                            {{ .Title }}
+                            {{ titleOrBody .Title .Body }}
                         </a>
                     </strong>
                 </div>

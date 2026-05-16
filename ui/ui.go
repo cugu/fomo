@@ -5,6 +5,8 @@ import (
 	"embed"
 	"fmt"
 	"html/template"
+	"regexp"
+	"strings"
 )
 
 //go:embed static/*
@@ -22,6 +24,7 @@ func Templates() *template.Template {
 		"safeHTML": func(s string) template.HTML {
 			return template.HTML(s) //nolint:gosec
 		},
+		"titleOrBody": titleOrBody,
 		"icon": func(name string, size int) template.HTML {
 			b, err := icons.ReadFile("icon/" + name + ".svg")
 			if err != nil {
@@ -38,4 +41,26 @@ func Templates() *template.Template {
 	})
 
 	return template.Must(templates.ParseFS(templateFiles, "*.gotmpl"))
+}
+
+var htmlTagRe = regexp.MustCompile(`<[^>]*>`)
+
+func titleOrBody(title, body string) string {
+	if title != "" {
+		return title
+	}
+
+	text := htmlTagRe.ReplaceAllString(body, "")
+	text = strings.Join(strings.Fields(text), " ")
+
+	const maxLen = 80
+	if len(text) > maxLen {
+		return text[:maxLen] + "…"
+	}
+
+	if text == "" {
+		return "(untitled)"
+	}
+
+	return text
 }
