@@ -12,7 +12,7 @@ import (
 func (s *Server) ListenAndServe(port int) error {
 	router := chi.NewRouter()
 	router.Use(middleware.RequestID)
-	router.Use(middleware.RealIP)
+	router.Use(middleware.ClientIPFromRemoteAddr)
 	router.Use(middleware.Logger)
 	router.Use(middleware.Recoverer)
 	router.Use(s.sessionManager.LoadAndSave)
