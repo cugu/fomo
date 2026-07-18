@@ -9,7 +9,7 @@ require (
 	github.com/go-co-op/gocron/v2 v2.22.0
 	github.com/go-shiori/go-readability v0.0.0-20241012063810-92284fa8a71f
 	github.com/lib/pq v1.12.3
-	github.com/mmcdole/gofeed v1.3.0
+	github.com/mmcdole/gofeed v1.4.0
 	modernc.org/sqlite v1.54.0
 )
 
@@ -33,7 +33,6 @@ require (
 	github.com/GaijinEntertainment/go-exhaustruct/v3 v3.3.0 // indirect
 	github.com/Masterminds/semver/v3 v3.3.0 // indirect
 	github.com/OpenPeeDeeP/depguard/v2 v2.2.0 // indirect
-	github.com/PuerkitoBio/goquery v1.9.1 // indirect
 	github.com/alecthomas/go-check-sumtype v0.2.0 // indirect
 	github.com/alexkohler/nakedret/v2 v2.0.5 // indirect
 	github.com/alexkohler/prealloc v1.0.0 // indirect
@@ -117,7 +116,6 @@ require (
 	github.com/jinzhu/inflection v1.0.0 // indirect
 	github.com/jjti/go-spancheck v0.6.2 // indirect
 	github.com/jonboulle/clockwork v0.5.0 // indirect
-	github.com/json-iterator/go v1.1.12 // indirect
 	github.com/julz/importas v0.1.0 // indirect
 	github.com/karamaru-alpha/copyloopvar v1.1.0 // indirect
 	github.com/kisielk/errcheck v1.8.0 // indirect
@@ -141,9 +139,7 @@ require (
 	github.com/mgechev/revive v1.5.1 // indirect
 	github.com/mitchellh/go-homedir v1.1.0 // indirect
 	github.com/mitchellh/mapstructure v1.5.0 // indirect
-	github.com/mmcdole/goxpp v1.1.1 // indirect
-	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
-	github.com/modern-go/reflect2 v1.0.2 // indirect
+	github.com/mmcdole/goxpp/v2 v2.0.0 // indirect
 	github.com/moricho/tparallel v0.3.2 // indirect
 	github.com/nakabonne/nestif v0.3.1 // indirect
 	github.com/ncruces/go-strftime v1.0.0 // indirect
