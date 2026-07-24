@@ -5,20 +5,22 @@
 package sqlc
 
 import (
+	"database/sql"
 	"time"
 )
 
 type Article struct {
-	ID          int64     `json:"id"`
-	Guid        string    `json:"guid"`
-	Title       string    `json:"title"`
-	Body        string    `json:"body"`
-	PublishedAt time.Time `json:"published_at"`
-	Link        string    `json:"link"`
-	Details     string    `json:"details"`
-	Feed        string    `json:"feed"`
-	Read        bool      `json:"read"`
-	Bookmarked  bool      `json:"bookmarked"`
+	ID          int64        `json:"id"`
+	Guid        string       `json:"guid"`
+	Title       string       `json:"title"`
+	Body        string       `json:"body"`
+	PublishedAt time.Time    `json:"published_at"`
+	Link        string       `json:"link"`
+	Details     string       `json:"details"`
+	Feed        string       `json:"feed"`
+	Read        bool         `json:"read"`
+	Bookmarked  bool         `json:"bookmarked"`
+	AvailableAt sql.NullTime `json:"available_at"`
 }
 
 type Session struct {

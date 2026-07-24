@@ -12,9 +12,10 @@ import (
 )
 
 const article = `-- name: Article :one
-SELECT id, guid, title, body, published_at, link, details, feed, read, bookmarked
+SELECT id, guid, title, body, published_at, link, details, feed, read, bookmarked, available_at
 FROM articles
 WHERE id = ?1
+  AND (available_at IS NULL OR datetime(available_at) <= CURRENT_TIMESTAMP)
 `
 
 func (q *Queries) Article(ctx context.Context, id int64) (Article, error) {
@@ -31,6 +32,7 @@ func (q *Queries) Article(ctx context.Context, id int64) (Article, error) {
 		&i.Feed,
 		&i.Read,
 		&i.Bookmarked,
+		&i.AvailableAt,
 	)
 	return i, err
 }
@@ -77,21 +79,22 @@ func (q *Queries) CommitSession(ctx context.Context, arg CommitSessionParams) er
 }
 
 const createArticle = `-- name: CreateArticle :one
-INSERT OR IGNORE INTO articles (guid, title, body, published_at, link, feed, details, read, bookmarked)
-VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9)
+INSERT OR IGNORE INTO articles (guid, title, body, published_at, link, feed, details, read, bookmarked, available_at)
+VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10)
 RETURNING id
 `
 
 type CreateArticleParams struct {
-	Guid        string    `json:"guid"`
-	Title       string    `json:"title"`
-	Body        string    `json:"body"`
-	PublishedAt time.Time `json:"published_at"`
-	Link        string    `json:"link"`
-	Feed        string    `json:"feed"`
-	Details     string    `json:"details"`
-	Read        bool      `json:"read"`
-	Bookmarked  bool      `json:"bookmarked"`
+	Guid        string       `json:"guid"`
+	Title       string       `json:"title"`
+	Body        string       `json:"body"`
+	PublishedAt time.Time    `json:"published_at"`
+	Link        string       `json:"link"`
+	Feed        string       `json:"feed"`
+	Details     string       `json:"details"`
+	Read        bool         `json:"read"`
+	Bookmarked  bool         `json:"bookmarked"`
+	AvailableAt sql.NullTime `json:"available_at"`
 }
 
 func (q *Queries) CreateArticle(ctx context.Context, arg CreateArticleParams) (int64, error) {
@@ -105,6 +108,7 @@ func (q *Queries) CreateArticle(ctx context.Context, arg CreateArticleParams) (i
 		arg.Details,
 		arg.Read,
 		arg.Bookmarked,
+		arg.AvailableAt,
 	)
 	var id int64
 	err := row.Scan(&id)
@@ -136,8 +140,10 @@ func (q *Queries) FindSession(ctx context.Context, token interface{}) (Session, 
 }
 
 const listArticles = `-- name: ListArticles :many
-SELECT id, guid, title, body, published_at, link, details, feed, read, bookmarked
+SELECT id, guid, title, body, published_at, link, details, feed, read, bookmarked, available_at
 FROM articles
+WHERE available_at IS NULL
+   OR datetime(available_at) <= CURRENT_TIMESTAMP
 ORDER BY published_at DESC
 LIMIT ?2 OFFSET ?1
 `
@@ -167,6 +173,7 @@ func (q *Queries) ListArticles(ctx context.Context, arg ListArticlesParams) ([]A
 			&i.Feed,
 			&i.Read,
 			&i.Bookmarked,
+			&i.AvailableAt,
 		); err != nil {
 			return nil, err
 		}
@@ -182,9 +189,10 @@ func (q *Queries) ListArticles(ctx context.Context, arg ListArticlesParams) ([]A
 }
 
 const listBookmarkedArticles = `-- name: ListBookmarkedArticles :many
-SELECT id, guid, title, body, published_at, link, details, feed, read, bookmarked
+SELECT id, guid, title, body, published_at, link, details, feed, read, bookmarked, available_at
 FROM articles
 WHERE bookmarked = TRUE
+  AND (available_at IS NULL OR datetime(available_at) <= CURRENT_TIMESTAMP)
 ORDER BY published_at DESC
 LIMIT ?2 OFFSET ?1
 `
@@ -214,6 +222,7 @@ func (q *Queries) ListBookmarkedArticles(ctx context.Context, arg ListBookmarked
 			&i.Feed,
 			&i.Read,
 			&i.Bookmarked,
+			&i.AvailableAt,
 		); err != nil {
 			return nil, err
 		}
@@ -229,9 +238,10 @@ func (q *Queries) ListBookmarkedArticles(ctx context.Context, arg ListBookmarked
 }
 
 const listReadArticles = `-- name: ListReadArticles :many
-SELECT id, guid, title, body, published_at, link, details, feed, read, bookmarked
+SELECT id, guid, title, body, published_at, link, details, feed, read, bookmarked, available_at
 FROM articles
 WHERE read = TRUE
+  AND (available_at IS NULL OR datetime(available_at) <= CURRENT_TIMESTAMP)
 ORDER BY published_at DESC
 LIMIT ?2 OFFSET ?1
 `
@@ -261,6 +271,7 @@ func (q *Queries) ListReadArticles(ctx context.Context, arg ListReadArticlesPara
 			&i.Feed,
 			&i.Read,
 			&i.Bookmarked,
+			&i.AvailableAt,
 		); err != nil {
 			return nil, err
 		}
@@ -276,9 +287,10 @@ func (q *Queries) ListReadArticles(ctx context.Context, arg ListReadArticlesPara
 }
 
 const listUnreadArticles = `-- name: ListUnreadArticles :many
-SELECT id, guid, title, body, published_at, link, details, feed, read, bookmarked
+SELECT id, guid, title, body, published_at, link, details, feed, read, bookmarked, available_at
 FROM articles
 WHERE read = FALSE
+  AND (available_at IS NULL OR datetime(available_at) <= CURRENT_TIMESTAMP)
 ORDER BY published_at DESC
 LIMIT ?2 OFFSET ?1
 `
@@ -308,6 +320,7 @@ func (q *Queries) ListUnreadArticles(ctx context.Context, arg ListUnreadArticles
 			&i.Feed,
 			&i.Read,
 			&i.Bookmarked,
+			&i.AvailableAt,
 		); err != nil {
 			return nil, err
 		}
@@ -326,6 +339,7 @@ const markReadAllArticles = `-- name: MarkReadAllArticles :exec
 UPDATE articles
 SET read = TRUE
 WHERE read = FALSE
+  AND (available_at IS NULL OR datetime(available_at) <= CURRENT_TIMESTAMP)
 `
 
 func (q *Queries) MarkReadAllArticles(ctx context.Context) error {
@@ -345,9 +359,10 @@ func (q *Queries) MarkReadArticle(ctx context.Context, id int64) error {
 }
 
 const nextUnreadArticle = `-- name: NextUnreadArticle :one
-SELECT id, guid, title, body, published_at, link, details, feed, read, bookmarked
+SELECT id, guid, title, body, published_at, link, details, feed, read, bookmarked, available_at
 FROM articles
 WHERE read = FALSE
+  AND (available_at IS NULL OR datetime(available_at) <= CURRENT_TIMESTAMP)
 ORDER BY published_at DESC
 LIMIT 1
 `
@@ -366,17 +381,30 @@ func (q *Queries) NextUnreadArticle(ctx context.Context) (Article, error) {
 		&i.Feed,
 		&i.Read,
 		&i.Bookmarked,
+		&i.AvailableAt,
 	)
 	return i, err
 }
 
+const releasePendingArticles = `-- name: ReleasePendingArticles :exec
+UPDATE articles
+SET available_at = NULL
+WHERE available_at IS NOT NULL
+`
+
+func (q *Queries) ReleasePendingArticles(ctx context.Context) error {
+	_, err := q.db.ExecContext(ctx, releasePendingArticles)
+	return err
+}
+
 const searchArticles = `-- name: SearchArticles :many
-SELECT id, guid, title, body, published_at, link, details, feed, read, bookmarked
+SELECT id, guid, title, body, published_at, link, details, feed, read, bookmarked, available_at
 FROM articles
-WHERE title LIKE '%' || ?1 || '%'
-   OR body LIKE '%' || ?1 || '%'
-   OR details LIKE '%' || ?1 || '%'
-   OR link LIKE '%' || ?1 || '%'
+WHERE (title LIKE '%' || ?1 || '%'
+    OR body LIKE '%' || ?1 || '%'
+    OR details LIKE '%' || ?1 || '%'
+    OR link LIKE '%' || ?1 || '%')
+  AND (available_at IS NULL OR datetime(available_at) <= CURRENT_TIMESTAMP)
 ORDER BY published_at DESC
 LIMIT ?3 OFFSET ?2
 `
@@ -407,6 +435,7 @@ func (q *Queries) SearchArticles(ctx context.Context, arg SearchArticlesParams) 
 			&i.Feed,
 			&i.Read,
 			&i.Bookmarked,
+			&i.AvailableAt,
 		); err != nil {
 			return nil, err
 		}
@@ -423,21 +452,22 @@ func (q *Queries) SearchArticles(ctx context.Context, arg SearchArticlesParams) 
 
 const setArticle = `-- name: SetArticle :one
 INSERT OR
-REPLACE INTO articles (guid, title, body, published_at, link, feed, details, read, bookmarked)
-VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9)
+REPLACE INTO articles (guid, title, body, published_at, link, feed, details, read, bookmarked, available_at)
+VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10)
 RETURNING id
 `
 
 type SetArticleParams struct {
-	Guid        string    `json:"guid"`
-	Title       string    `json:"title"`
-	Body        string    `json:"body"`
-	PublishedAt time.Time `json:"published_at"`
-	Link        string    `json:"link"`
-	Feed        string    `json:"feed"`
-	Details     string    `json:"details"`
-	Read        bool      `json:"read"`
-	Bookmarked  bool      `json:"bookmarked"`
+	Guid        string       `json:"guid"`
+	Title       string       `json:"title"`
+	Body        string       `json:"body"`
+	PublishedAt time.Time    `json:"published_at"`
+	Link        string       `json:"link"`
+	Feed        string       `json:"feed"`
+	Details     string       `json:"details"`
+	Read        bool         `json:"read"`
+	Bookmarked  bool         `json:"bookmarked"`
+	AvailableAt sql.NullTime `json:"available_at"`
 }
 
 func (q *Queries) SetArticle(ctx context.Context, arg SetArticleParams) (int64, error) {
@@ -451,6 +481,7 @@ func (q *Queries) SetArticle(ctx context.Context, arg SetArticleParams) (int64, 
 		arg.Details,
 		arg.Read,
 		arg.Bookmarked,
+		arg.AvailableAt,
 	)
 	var id int64
 	err := row.Scan(&id)

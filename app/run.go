@@ -41,7 +41,14 @@ func RunWithConfig(config *Config, password, dataDirPath string) error {
 	}
 	defer teardownScheduler()
 
-	fomoServer := server.New(config.BaseURL, password, config.UpdateTimes, config.Feeds, queries)
+	fomoServer := server.New(
+		config.BaseURL,
+		password,
+		config.FetchInterval,
+		config.ReleaseTimes,
+		config.Feeds,
+		queries,
+	)
 
 	slog.Info("Starting server", "url", config.BaseURL)
 

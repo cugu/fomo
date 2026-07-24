@@ -173,6 +173,7 @@ func (s *Server) articleReFetch(writer http.ResponseWriter, request *http.Reques
 		Details:     updated.Details,
 		Read:        updated.Read,
 		Bookmarked:  updated.Bookmarked,
+		AvailableAt: article.AvailableAt,
 	})
 	if err != nil {
 		s.error(err.Error(), writer, request)
@@ -307,6 +308,7 @@ func (s *Server) articleUpdate(writer http.ResponseWriter, request *http.Request
 		Details:     request.FormValue("details"),
 		Read:        article.Read,
 		Bookmarked:  article.Bookmarked,
+		AvailableAt: article.AvailableAt,
 	})
 	if err != nil {
 		s.error(err.Error(), writer, request)

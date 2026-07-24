@@ -4,6 +4,8 @@ import (
 	"context"
 	"fmt"
 	"log/slog"
+	"slices"
+	"time"
 
 	"github.com/go-co-op/gocron/v2"
 
@@ -17,27 +19,23 @@ func scheduleUpdates(config *Config, queries *sqlc.Queries) (func() error, error
 		return nil, fmt.Errorf("error creating scheduler: %w", err)
 	}
 
-	var atTimes []gocron.AtTime
-
-	for _, updateTime := range config.UpdateTimes {
-		if updateTime < 0 || updateTime >= 24 {
-			return nil, fmt.Errorf("invalid update time: %d", updateTime)
-		}
-
-		atTimes = append(atTimes, gocron.NewAtTime(uint(updateTime), 0, 0))
-	}
-
-	if len(atTimes) == 0 {
+	if len(config.ReleaseTimes) == 0 {
+		slog.Info("Automatic feed fetching disabled because no release times are configured")
 		return scheduler.Shutdown, nil
 	}
 
-	slog.Info("Scheduling updates", "times", config.UpdateTimes)
+	slog.Info(
+		"Scheduling feed fetches",
+		"interval", config.FetchInterval,
+		"release_times", config.ReleaseTimes,
+	)
 
 	if _, err := scheduler.NewJob(
-		gocron.DailyJob(1, gocron.NewAtTimes(atTimes[0], atTimes[1:]...)),
+		gocron.DurationJob(config.FetchInterval),
 		gocron.NewTask(func() {
+			availableAt := nextReleaseTime(time.Now(), config.ReleaseTimes)
 			for _, f := range config.Feeds {
-				if err := feed.Fetch(context.Background(), queries, f); err != nil {
+				if err := feed.Fetch(context.Background(), queries, f, &availableAt); err != nil {
 					slog.Error("error fetching feed", "name", f.Name(), "error", err.Error())
 				}
 			}
@@ -50,4 +48,18 @@ func scheduleUpdates(config *Config, queries *sqlc.Queries) (func() error, error
 	scheduler.Start()
 
 	return scheduler.Shutdown, nil
+}
+
+func nextReleaseTime(now time.Time, releaseTimes []int) time.Time {
+	times := slices.Clone(releaseTimes)
+	slices.Sort(times)
+
+	for _, hour := range times {
+		candidate := time.Date(now.Year(), now.Month(), now.Day(), hour, 0, 0, 0, now.Location())
+		if !candidate.Before(now) {
+			return candidate
+		}
+	}
+
+	return time.Date(now.Year(), now.Month(), now.Day()+1, times[0], 0, 0, 0, now.Location())
 }

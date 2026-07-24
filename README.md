@@ -8,7 +8,7 @@ A personal newsreader.
 - **Read articles** in a clean, distraction-free interface
 - Manually **mark articles as read**, without doom-scrolling
 - **Bookmark articles** for later
-- **Auto-update feeds** on a schedule, no slot machine pull-to-refresh
+- **Fetch feeds regularly** while releasing new articles only at scheduled times
 - **Dark mode** for those late-night reading sessions
 - **Self-hosted**: no ads, no tracking, no paywalls
 - **No JavaScript**: just server-rendered HTML
@@ -43,8 +43,10 @@ The configuration file is a JSON file with the structure shown below.
   "base_url": "http://localhost:8080",
   // Port to listen on
   "port": 8080,
-  // Times to update feeds
-  "update_times": [
+  // How often to fetch feeds (defaults to 60 minutes)
+  "fetch_interval_minutes": 60,
+  // Times when fetched articles become visible
+  "release_times": [
     7,
     16
   ],
@@ -68,6 +70,13 @@ The configuration file is a JSON file with the structure shown below.
   }
 }
 ```
+
+`release_times` uses whole hours in the server's local timezone. Automatically fetched articles remain hidden
+until the next configured release time, when all waiting articles become visible. If no release times are configured,
+automatic fetching is disabled. Manual feed fetches and articles ingested by URL are visible immediately.
+
+For backwards compatibility, `update_times` is accepted as a deprecated alias for `release_times`. If both are
+configured, `release_times` takes precedence.
 
 ## Screenshots
 
