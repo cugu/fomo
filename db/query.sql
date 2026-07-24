@@ -1,6 +1,8 @@
 -- name: ListArticles :many
 SELECT *
 FROM articles
+WHERE available_at IS NULL
+   OR datetime(available_at) <= CURRENT_TIMESTAMP
 ORDER BY published_at DESC
 LIMIT @limit OFFSET @offset;
 
@@ -8,6 +10,7 @@ LIMIT @limit OFFSET @offset;
 SELECT *
 FROM articles
 WHERE read = FALSE
+  AND (available_at IS NULL OR datetime(available_at) <= CURRENT_TIMESTAMP)
 ORDER BY published_at DESC
 LIMIT @limit OFFSET @offset;
 
@@ -15,6 +18,7 @@ LIMIT @limit OFFSET @offset;
 SELECT *
 FROM articles
 WHERE read = TRUE
+  AND (available_at IS NULL OR datetime(available_at) <= CURRENT_TIMESTAMP)
 ORDER BY published_at DESC
 LIMIT @limit OFFSET @offset;
 
@@ -22,23 +26,26 @@ LIMIT @limit OFFSET @offset;
 SELECT *
 FROM articles
 WHERE bookmarked = TRUE
+  AND (available_at IS NULL OR datetime(available_at) <= CURRENT_TIMESTAMP)
 ORDER BY published_at DESC
 LIMIT @limit OFFSET @offset;
 
 -- name: SearchArticles :many
 SELECT *
 FROM articles
-WHERE title LIKE '%' || @query || '%'
-   OR body LIKE '%' || @query || '%'
-   OR details LIKE '%' || @query || '%'
-   OR link LIKE '%' || @query || '%'
+WHERE (title LIKE '%' || @query || '%'
+    OR body LIKE '%' || @query || '%'
+    OR details LIKE '%' || @query || '%'
+    OR link LIKE '%' || @query || '%')
+  AND (available_at IS NULL OR datetime(available_at) <= CURRENT_TIMESTAMP)
 ORDER BY published_at DESC
 LIMIT @limit OFFSET @offset;
 
 -- name: Article :one
 SELECT *
 FROM articles
-WHERE id = @id;
+WHERE id = @id
+  AND (available_at IS NULL OR datetime(available_at) <= CURRENT_TIMESTAMP);
 
 -- name: ArticleIDByGUID :one
 SELECT id
@@ -49,18 +56,19 @@ WHERE guid = @guid;
 SELECT *
 FROM articles
 WHERE read = FALSE
+  AND (available_at IS NULL OR datetime(available_at) <= CURRENT_TIMESTAMP)
 ORDER BY published_at DESC
 LIMIT 1;
 
 -- name: CreateArticle :one
-INSERT OR IGNORE INTO articles (guid, title, body, published_at, link, feed, details, read, bookmarked)
-VALUES (@guid, @title, @body, @published_at, @link, @feed, @details, @read, @bookmarked)
+INSERT OR IGNORE INTO articles (guid, title, body, published_at, link, feed, details, read, bookmarked, available_at)
+VALUES (@guid, @title, @body, @published_at, @link, @feed, @details, @read, @bookmarked, @available_at)
 RETURNING id;
 
 -- name: SetArticle :one
 INSERT OR
-REPLACE INTO articles (guid, title, body, published_at, link, feed, details, read, bookmarked)
-VALUES (@guid, @title, @body, @published_at, @link, @feed, @details, @read, @bookmarked)
+REPLACE INTO articles (guid, title, body, published_at, link, feed, details, read, bookmarked, available_at)
+VALUES (@guid, @title, @body, @published_at, @link, @feed, @details, @read, @bookmarked, @available_at)
 RETURNING id;
 
 -- name: MarkReadArticle :exec
@@ -71,7 +79,13 @@ WHERE id = @id;
 -- name: MarkReadAllArticles :exec
 UPDATE articles
 SET read = TRUE
-WHERE read = FALSE;
+WHERE read = FALSE
+  AND (available_at IS NULL OR datetime(available_at) <= CURRENT_TIMESTAMP);
+
+-- name: ReleasePendingArticles :exec
+UPDATE articles
+SET available_at = NULL
+WHERE available_at IS NOT NULL;
 
 -- name: BookmarkArticle :exec
 UPDATE articles

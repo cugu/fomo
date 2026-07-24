@@ -1,6 +1,7 @@
 package server
 
 import (
+	"database/sql"
 	"errors"
 	"fmt"
 	"net/http"
@@ -16,8 +17,13 @@ import (
 func (s *Server) fetchFeeds(writer http.ResponseWriter, request *http.Request) {
 	var errs []error
 
+	if err := s.queries.ReleasePendingArticles(request.Context()); err != nil {
+		s.error(err.Error(), writer, request)
+		return
+	}
+
 	for _, f := range s.feeds {
-		errs = append(errs, feed.Fetch(request.Context(), s.queries, f))
+		errs = append(errs, feed.Fetch(request.Context(), s.queries, f, nil))
 	}
 
 	if err := errors.Join(errs...); err != nil {
@@ -59,6 +65,7 @@ func (s *Server) addArticle(writer http.ResponseWriter, request *http.Request) {
 		Details:     targetURL.Hostname(),
 		Read:        false,
 		Bookmarked:  false,
+		AvailableAt: sql.NullTime{},
 	})
 	if err != nil {
 		s.error(err.Error(), writer, request)

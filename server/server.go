@@ -18,7 +18,8 @@ import (
 type Server struct {
 	baseURL        string
 	password       string
-	updateTimes    []int
+	fetchInterval  time.Duration
+	releaseTimes   []int
 	queries        *sqlc.Queries
 	feeds          []feed.Feed
 	sessionManager *scs.SessionManager
@@ -28,7 +29,8 @@ type Server struct {
 func New(
 	baseURL string,
 	password string,
-	updateTimes []int,
+	fetchInterval time.Duration,
+	releaseTimes []int,
 	feeds []feed.Feed,
 	queries *sqlc.Queries,
 ) *Server {
@@ -39,7 +41,8 @@ func New(
 	return &Server{
 		baseURL:        baseURL,
 		password:       password,
-		updateTimes:    updateTimes,
+		fetchInterval:  fetchInterval,
+		releaseTimes:   releaseTimes,
 		queries:        queries,
 		feeds:          feeds,
 		sessionManager: sessionManager,
@@ -64,7 +67,9 @@ func (s *Server) template(writer http.ResponseWriter, title string, data map[str
 	data["BaseURL"] = s.baseURL
 
 	zone, _ := time.Now().Zone()
-	data["UpdateTimes"] = fmt.Sprintf("%s (%s)", formatTimes(s.updateTimes), zone)
+	data["FetchInterval"] = s.fetchInterval
+	data["ReleaseTimes"] = fmt.Sprintf("%s (%s)", formatTimes(s.releaseTimes), zone)
+	data["AutomaticFetchEnabled"] = len(s.releaseTimes) > 0
 
 	if err := s.templates.ExecuteTemplate(writer, title, data); err != nil {
 		http.Error(writer, err.Error(), http.StatusInternalServerError)
@@ -78,6 +83,7 @@ func formatTimes(updateTimes []int) string {
 		return ""
 	}
 
+	updateTimes = slices.Clone(updateTimes)
 	slices.Sort(updateTimes)
 
 	var times []string

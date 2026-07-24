@@ -4,11 +4,12 @@ import (
 	"context"
 	"database/sql"
 	"errors"
+	"time"
 
 	"github.com/cugu/fomo/db/sqlc"
 )
 
-func Fetch(ctx context.Context, queries *sqlc.Queries, f Feed) error {
+func Fetch(ctx context.Context, queries *sqlc.Queries, f Feed, availableAt *time.Time) error {
 	seen := func(ctx context.Context, guid string) bool {
 		if _, err := queries.ArticleIDByGUID(ctx, guid); err != nil {
 			return false
@@ -29,6 +30,11 @@ func Fetch(ctx context.Context, queries *sqlc.Queries, f Feed) error {
 			article.Body = "error: MAX BODY SIZE REACHED" + article.Body[:1_000_000]
 		}
 
+		var availability sql.NullTime
+		if availableAt != nil {
+			availability = sql.NullTime{Time: *availableAt, Valid: true}
+		}
+
 		_, err := queries.CreateArticle(ctx, sqlc.CreateArticleParams{
 			Guid:        article.Guid,
 			Title:       article.Title,
@@ -39,6 +45,7 @@ func Fetch(ctx context.Context, queries *sqlc.Queries, f Feed) error {
 			Details:     article.Details,
 			Read:        article.Read,
 			Bookmarked:  article.Bookmarked,
+			AvailableAt: availability,
 		})
 
 		// ignore duplicate entries
