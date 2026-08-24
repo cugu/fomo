@@ -9,7 +9,7 @@ require (
 	github.com/go-co-op/gocron/v2 v2.22.0
 	github.com/go-shiori/go-readability v0.0.0-20241012063810-92284fa8a71f
 	github.com/lib/pq v1.12.3
-	github.com/mmcdole/gofeed v1.4.1
+	github.com/mmcdole/gofeed v1.4.2
 	modernc.org/sqlite v1.56.0
 )
 
